@@ -1,0 +1,65 @@
+{
+  "name": "my-career-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Career portfolio monorepo with admin panel, public website, and backend API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Miladkiani/my-career-monorepo.git"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "turbo run dev",
+    "build": "pnpm build:packages && turbo run build --filter !@repo/rest-api-client",
+    "build:packages": "pnpm --filter @repo/validation build && pnpm --filter @repo/ui build && pnpm --filter @repo/graphql build",
+    "build:docker": "pnpm schema:generate && pnpm build:packages && turbo run build --filter=backend --filter=admin --filter=website",
+    "lint": "turbo run lint",
+    "prepare": "husky",
+    "typecheck": "tsc --build",
+    "typecheck:watch": "tsc --build --watch",
+    "check:types": "turbo run check-types",
+    "check:types:admin": "pnpm --filter admin check-types",
+    "check:types:backend": "pnpm --filter backend check-types",
+    "check:types:website": "pnpm --filter website check-types",
+    "check:lint": "turbo run lint",
+    "check:lint:admin": "pnpm --filter admin lint",
+    "check:lint:backend": "pnpm --filter backend lint",
+    "check:lint:website": "pnpm --filter website lint",
+    "check:all": "pnpm run check:types && pnpm run check:lint",
+    "graphql:codegen": "pnpm --filter @repo/graphql codegen",
+    "validation:rebuild": "pnpm --filter @repo/validation exec rm -rf dist dist-cjs *.tsbuildinfo && pnpm --filter @repo/validation build",
+    "schema:generate": "pnpm --filter backend generate:schema",
+    "check:schema": "node scripts/check-schema-sync.js",
+    "prisma:generate": "pnpm --filter backend exec prisma generate",
+    "prisma:push": "pnpm --filter backend exec prisma db push && pnpm --filter backend exec prisma db seed",
+    "prisma:migrate": "pnpm --filter backend exec prisma migrate dev",
+    "prisma:migrate:seed": "pnpm --filter backend exec prisma migrate dev && pnpm --filter backend exec prisma db seed",
+    "prisma:seed": "pnpm --filter backend exec prisma db seed",
+    "prisma:reset": "pnpm --filter backend exec prisma migrate reset --force  && pnpm --filter backend exec prisma db seed",
+    "prisma:setup": "pnpm prisma:generate && pnpm prisma:migrate:seed",
+    "user:manage": "pnpm --filter backend user:manage",
+    "pre-push": "pnpm graphql:codegen && turbo run check-types lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "browserslist": [
+    "since 2022",
+    "not dead",
+    "not op_mini all"
+  ],
+  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "turbo": "^2.5.6",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

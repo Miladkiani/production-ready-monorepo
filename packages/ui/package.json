@@ -1,0 +1,144 @@
+{
+  "name": "@repo/ui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared UI components library with Tailwind CSS",
+  "license": "MIT",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./components/Table": {
+      "types": "./dist/components/Table.d.ts",
+      "import": "./dist/components/Table.js",
+      "default": "./dist/components/Table.js"
+    },
+    "./components/EditableText": {
+      "types": "./dist/components/EditableText.d.ts",
+      "import": "./dist/components/EditableText.js",
+      "default": "./dist/components/EditableText.js"
+    },
+    "./components/Drawer": {
+      "types": "./dist/components/drawer/index.d.ts",
+      "import": "./dist/components/drawer/index.js",
+      "default": "./dist/components/drawer/index.js"
+    },
+    "./components/ImageUploader": {
+      "types": "./dist/components/ImageUploader.d.ts",
+      "import": "./dist/components/ImageUploader.js",
+      "default": "./dist/components/ImageUploader.js"
+    },
+    "./components/FileUploader": {
+      "types": "./dist/components/FileUploader.d.ts",
+      "import": "./dist/components/FileUploader.js",
+      "default": "./dist/components/FileUploader.js"
+    },
+    "./components/MultiSelect": {
+      "types": "./dist/components/MultiSelect.d.ts",
+      "import": "./dist/components/MultiSelect.js",
+      "default": "./dist/components/MultiSelect.js"
+    },
+    "./components/form/ImageUploaderForm": {
+      "types": "./dist/components/form/ImageUploaderForm.d.ts",
+      "import": "./dist/components/form/ImageUploaderForm.js",
+      "default": "./dist/components/form/ImageUploaderForm.js"
+    },
+    "./components/form/FileUploaderForm": {
+      "types": "./dist/components/form/FileUploaderForm.d.ts",
+      "import": "./dist/components/form/FileUploaderForm.js",
+      "default": "./dist/components/form/FileUploaderForm.js"
+    },
+    "./components/form/MultiSelectForm": {
+      "types": "./dist/components/form/MultiSelectForm.d.ts",
+      "import": "./dist/components/form/MultiSelectForm.js",
+      "default": "./dist/components/form/MultiSelectForm.js"
+    },
+    "./components/skeletons": {
+      "types": "./dist/components/skeletons/index.d.ts",
+      "import": "./dist/components/skeletons/index.js",
+      "default": "./dist/components/skeletons/index.js"
+    },
+    "./components/RichTextEditor": {
+      "types": "./dist/components/RichTextEditor.d.ts",
+      "import": "./dist/components/RichTextEditor.js",
+      "default": "./dist/components/RichTextEditor.js"
+    },
+    "./components/ImageCarouselModal": {
+      "types": "./dist/components/ImageCarouselModal/index.d.ts",
+      "import": "./dist/components/ImageCarouselModal/index.js",
+      "default": "./dist/components/ImageCarouselModal/index.js"
+    },
+    "./functions/*": {
+      "types": "./dist/functions/*.d.ts",
+      "import": "./dist/functions/*.js"
+    },
+    "./styles.css": "./dist/index.css"
+  },
+  "scripts": {
+    "build": "pnpm run build:components && pnpm run build:styles",
+    "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
+    "build:components": "tsc",
+    "check-types": "tsc --noEmit",
+    "dev": "pnpm run dev:components & pnpm run dev:styles",
+    "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
+    "dev:components": "tsc --watch",
+    "lint": "eslint src",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@eslint/js": "^9",
+    "@repo/tailwind-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/cli": "^4.1.5",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@types/styled-jsx": "^3.4.4",
+    "eslint": "^9",
+    "eslint-plugin-react": "^7",
+    "eslint-plugin-react-hooks": "^5",
+    "react": "*",
+    "react-dom": "*",
+    "react-hook-form": "^7.62.0",
+    "tailwindcss": "^4.1.5",
+    "typescript": "*",
+    "typescript-eslint": "^8"
+  },
+  "dependencies": {
+    "clsx": "*",
+    "lucide-react": "^0.545.0",
+    "tailwind-merge": "^3.3.1"
+  },
+  "peerDependencies": {
+    "@tiptap/extension-image": "^3.7.2",
+    "@tiptap/extension-link": "^3.7.2",
+    "@tiptap/react": "^3.7.2",
+    "@tiptap/starter-kit": "^3.7.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.62.0"
+  },
+  "peerDependenciesMeta": {
+    "@tiptap/extension-image": {
+      "optional": true
+    },
+    "@tiptap/extension-link": {
+      "optional": true
+    },
+    "@tiptap/react": {
+      "optional": true
+    },
+    "@tiptap/starter-kit": {
+      "optional": true
+    }
+  }
+}

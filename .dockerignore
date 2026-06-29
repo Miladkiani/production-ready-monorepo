@@ -1,0 +1,55 @@
+# Dependencies
+node_modules
+**/node_modules
+.pnpm-store
+
+# Build outputs
+dist
+.next
+out
+build
+.turbo
+
+# Development files
+.git
+.gitignore
+.env.local
+.env.development
+.env*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage
+.nyc_output
+
+# Database (we'll handle SQLite separately)
+*.db
+*.db-journal
+apps/backend/prisma/dev.db*
+
+# Uploads (user-generated content)
+apps/backend/uploads
+
+# Documentation
+*.md
+!README.md
+docs
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore

@@ -1,0 +1,18 @@
+# Login mutation
+mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    accessToken
+  }
+}
+
+# Refresh mutation
+mutation RefreshToken {
+  refresh {
+    accessToken
+  }
+}
+
+# Logout mutation
+mutation Logout {
+  logout
+}

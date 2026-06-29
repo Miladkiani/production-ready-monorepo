@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@repo/typescript-config/next-tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "rootDir": "",
+    "paths": {
+      "@website/*": ["./src/*"],
+      "@website/components/*": ["./src/components/*"],
+      "@website/components/home/*": ["./src/components/home/*"],
+      "@website/constants/*": ["./src/constants/*"],
+      "@website/lib": ["./src/lib/"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "next-env.d.ts",
+    "next.config.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", ".next"]
+}

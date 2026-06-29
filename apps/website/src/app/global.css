@@ -1,0 +1,303 @@
+@import "tailwindcss";
+@source "../**/*.{js,ts,jsx,tsx}";
+@source "../../node_modules/@repo/ui/**/*.{js,ts,jsx,tsx}";
+
+/* ============================================================
+   WEBSITE THEME — Fullstack Turborepo Starter
+   Palette: Indigo (primary) + Sky (accent)
+   Supports light and dark mode via .dark class
+   ============================================================ */
+
+:root {
+  /* ── Indigo palette (primary) ── */
+  --indigo-50:  #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-200: #c7d2fe;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+  --indigo-900: #312e81;
+
+  /* ── Sky palette (accent) ── */
+  --sky-50:  #f0f9ff;
+  --sky-100: #e0f2fe;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+  --sky-600: #0284c7;
+  --sky-700: #0369a1;
+  --sky-900: #0c4a6e;
+
+  /* ── Slate (neutral) ── */
+  --slate-50:  #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
+
+  --white: #ffffff;
+  --black: #000000;
+
+  /* ── Semantic — Light Mode ── */
+  --color-primary:       var(--indigo-600);
+  --color-primary-hover: var(--indigo-700);
+  --color-accent:        var(--sky-500);
+  --color-accent-hover:  var(--sky-600);
+  --color-secondary:     var(--sky-500);
+  --color-secondary-hover: var(--sky-600);
+
+  --color-background:    var(--white);
+  --color-surface:       var(--slate-50);
+  --color-surface-hover: var(--slate-100);
+  --color-border:        var(--slate-200);
+  --color-border-hover:  var(--slate-300);
+
+  --color-text-primary:   var(--slate-900);
+  --color-text-secondary: var(--slate-600);
+  --color-text-muted:     var(--slate-500);
+  --color-text-inverse:   var(--white);
+
+  --color-card-bg:           var(--white);
+  --color-card-border:       var(--slate-200);
+  --color-card-hover-shadow: rgba(0, 0, 0, 0.08);
+
+  --color-ring: var(--indigo-200);
+
+  --color-tag-bg:   var(--indigo-50);
+  --color-tag-text: var(--indigo-700);
+
+  /* ── Semantic status colors ── */
+  --color-success:       #16a34a;
+  --color-success-hover: #15803d;
+  --color-success-light: #dcfce7;
+
+  --color-error:       #dc2626;
+  --color-error-hover: #b91c1c;
+  --color-error-light: #fee2e2;
+
+  --color-warning:       #d97706;
+  --color-warning-hover: #b45309;
+  --color-warning-light: #fef3c7;
+
+  --color-info:       var(--sky-600);
+  --color-info-hover: var(--sky-700);
+  --color-info-light: var(--sky-50);
+
+  /* ── Elevation ── */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* ── Misc ── */
+  --font-sans:  var(--font-sans, "Inter", system-ui, Arial, sans-serif);
+  --line-height: 1.5;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 1rem;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Dark Mode ─────────────────────────────────────────────── */
+.dark {
+  --color-primary:       var(--indigo-400);
+  --color-primary-hover: #a5b4fc; /* indigo-300 */
+  --color-accent:        var(--sky-400);
+  --color-accent-hover:  var(--sky-300);
+  --color-secondary:     var(--sky-400);
+  --color-secondary-hover: var(--sky-300);
+
+  --color-background:    var(--slate-950);
+  --color-surface:       var(--slate-900);
+  --color-surface-hover: var(--slate-800);
+  --color-border:        var(--slate-700);
+  --color-border-hover:  var(--slate-600);
+
+  --color-text-primary:   #f1f5f9; /* slate-100 */
+  --color-text-secondary: var(--slate-300);
+  --color-text-muted:     var(--slate-400);
+  --color-text-inverse:   var(--slate-900);
+
+  --color-card-bg:           var(--slate-800);
+  --color-card-border:       var(--slate-700);
+  --color-card-hover-shadow: rgba(0, 0, 0, 0.4);
+
+  --color-ring: var(--indigo-800);
+
+  --color-tag-bg:   var(--indigo-900);
+  --color-tag-text: var(--indigo-200);
+
+  /* Semantic status — dark variants */
+  --color-success:       #4ade80; /* green-400 */
+  --color-success-hover: #86efac; /* green-300 */
+  --color-success-light: #14532d; /* green-900 */
+
+  --color-error:       #f87171; /* red-400 */
+  --color-error-hover: #fca5a5; /* red-300 */
+  --color-error-light: #7f1d1d; /* red-900 */
+
+  --color-warning:       #fbbf24; /* amber-400 */
+  --color-warning-hover: #fcd34d; /* amber-300 */
+  --color-warning-light: #78350f; /* amber-900 */
+
+  --color-info:       var(--sky-400);
+  --color-info-hover: var(--sky-300);
+  --color-info-light: var(--sky-900);
+
+  /* Elevated shadows in dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6);
+}
+
+/* ── Tailwind v4 @theme inline ──────────────────────────────── */
+@theme inline {
+  --color-primary:         var(--color-primary);
+  --color-primary-hover:   var(--color-primary-hover);
+  --color-accent:          var(--color-accent);
+  --color-accent-hover:    var(--color-accent-hover);
+  --color-secondary:       var(--color-secondary);
+  --color-secondary-hover: var(--color-secondary-hover);
+
+  --color-background:    var(--color-background);
+  --color-surface:       var(--color-surface);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-border:        var(--color-border);
+  --color-border-hover:  var(--color-border-hover);
+
+  --color-text-primary:   var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted:     var(--color-text-muted);
+  --color-text-inverse:   var(--color-text-inverse);
+
+  --color-card-bg:     var(--color-card-bg);
+  --color-card-border: var(--color-card-border);
+
+  --color-ring:     var(--color-ring);
+  --color-tag-bg:   var(--color-tag-bg);
+  --color-tag-text: var(--color-tag-text);
+
+  --color-icon:       var(--color-text-muted);
+  --color-icon-hover: var(--color-primary);
+
+  --color-success:       var(--color-success);
+  --color-success-hover: var(--color-success-hover);
+  --color-success-light: var(--color-success-light);
+  --color-error:         var(--color-error);
+  --color-error-hover:   var(--color-error-hover);
+  --color-error-light:   var(--color-error-light);
+  --color-warning:       var(--color-warning);
+  --color-warning-hover: var(--color-warning-hover);
+  --color-warning-light: var(--color-warning-light);
+  --color-info:          var(--color-info);
+  --color-info-hover:    var(--color-info-hover);
+  --color-info-light:    var(--color-info-light);
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --animate-fade-in-up:          fadeInUp 0.7s ease-out forwards;
+  --animate-fade-in:             fadeIn 0.6s ease-out forwards;
+  --animate-slide-right:         slideInRight 0.7s ease-out forwards;
+  --animate-slide-right-delayed: slideInRight 1s ease-out 0.3s both;
+  --animate-scale-in:            scaleIn 0.6s ease-out forwards;
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(2rem); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(2rem); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+}
+
+/* ── Base Styles ────────────────────────────────────────────── */
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+/* ── Accessibility ──────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  * { border-width: 2px !important; }
+  button, a { text-decoration: underline; }
+}
+
+/* ── Utility: gradient section background ───────────────────── */
+.bg-section-gradient {
+  background: linear-gradient(
+    to bottom,
+    var(--color-surface),
+    var(--color-background)
+  );
+}
+
+/* ── Tag/Badge ──────────────────────────────────────────────── */
+.tag-base {
+  background-color: var(--color-tag-bg);
+  color: var(--color-tag-text);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition);
+}
+
+.tag-base:hover {
+  border-color: var(--color-border-hover);
+  transform: translateY(-1px);
+}

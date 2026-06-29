@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model User {
+  id                        String         @id @default(cuid())
+  email                     String         @unique
+  name                      String?
+  passwordHash              String
+  role                      Role           @default(ADMIN)
+  isEmailVerified           Boolean        @default(false)
+  currentHashedRefreshToken String?
+  sessions                  Session[]
+  loginAttempts             LoginAttempt[]
+  createdAt                 DateTime       @default(now())
+  updatedAt                 DateTime       @updatedAt
+}
+
+model LoginAttempt {
+  id            String   @id @default(cuid())
+  email         String
+  ipAddress     String?
+  userAgent     String?
+  successful    Boolean  @default(false)
+  captchaScore  Float? // reCAPTCHA v3 score (0.0 - 1.0)
+  captchaAction String? // reCAPTCHA action (e.g., 'login')
+  createdAt     DateTime @default(now())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email, createdAt])
+  @@index([ipAddress, createdAt])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model Profile {
+  id                String         @id @default(cuid())
+  fullName          String
+  tagline           String
+  bio               String
+  avatarUrl         String
+  email             String         @unique
+  phone             String
+  location          String
+  yearsOfExperience Int?   // Total years of professional experience (set from admin)
+  socials           Social[] // relation to Social table
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Social {
+  id        String   @id @default(cuid())
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String
+  icon      String? // Icon name from Icon component (e.g., "Linkedin", "Github")
+  logo      String? // URL of uploaded custom logo image
+  title     String
+  link      String
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+// ============================================================================
+// Contact Messages - User submissions from website contact form
+// ============================================================================
+
+enum ContactMessageStatus {
+  NEW       // Just received, unread
+  READ      // Admin has viewed
+  REPLIED   // Admin has responded
+  ARCHIVED  // Hidden from main view
+  SPAM      // Marked as spam
+}
+
+model ContactMessage {
+  id      String               @id @default(cuid())
+  
+  // Sender Info
+  name    String
+  email   String
+  message String
+  
+  // Status & Tracking
+  status     ContactMessageStatus @default(NEW)
+  adminNotes String? // Internal notes for admin
+  
+  // Metadata (for security & analytics)
+  ipAddress String?
+  userAgent String?
+  
+  // Reply tracking
+  repliedAt  DateTime?
+  repliedBy  String? // Admin who replied
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([status])
+  @@index([createdAt])
+  @@index([email])
+}
+
+/// Security Settings
+/// Single-record model for storing security configuration
+/// Used for Telegram login notifications
+model SecuritySettings {
+  id               String   @id @default("security-settings") // Fixed ID for single record
+  telegramBotToken String?  // Optional: Telegram bot token for notifications
+  telegramChatId   String?  // Optional: Telegram chat ID for notifications
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

@@ -1,0 +1,81 @@
+# Public mutation for submitting contact form
+mutation SubmitContactForm($input: CreateContactMessageInput!) {
+  submitContactForm(input: $input) {
+    success
+    message
+    data {
+      id
+      name
+      email
+      status
+      createdAt
+    }
+  }
+}
+
+# Admin query: Get all contact messages with filtering
+query ContactMessages($filter: ContactMessagesFilterInput) {
+  contactMessages(filter: $filter) {
+    messages {
+      id
+      name
+      email
+      message
+      status
+      createdAt
+      repliedAt
+      repliedBy
+      ipAddress
+      userAgent
+    }
+    total
+  }
+}
+
+# Admin query: Get contact message statistics
+query ContactMessageStatistics {
+  contactMessageStatistics {
+    total
+    new
+    read
+    replied
+  }
+}
+
+# Admin query: Get single contact message
+query ContactMessage($id: String!) {
+  contactMessage(id: $id) {
+    id
+    name
+    email
+    message
+    status
+    createdAt
+    repliedAt
+    repliedBy
+    adminNotes
+    ipAddress
+    userAgent
+  }
+}
+
+# Admin mutation: Update message status
+mutation UpdateContactMessageStatus($input: UpdateContactMessageStatusInput!) {
+  updateContactMessageStatus(input: $input) {
+    id
+    status
+  }
+}
+
+# Admin mutation: Mark message as read
+mutation MarkContactMessageAsRead($id: String!) {
+  markContactMessageAsRead(id: $id) {
+    id
+    status
+  }
+}
+
+# Admin mutation: Delete contact message
+mutation DeleteContactMessage($id: String!) {
+  deleteContactMessage(id: $id)
+}

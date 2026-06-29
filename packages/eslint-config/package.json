@@ -1,0 +1,29 @@
+{
+  "name": "@repo/eslint-config",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared ESLint configurations for monorepo packages",
+  "type": "module",
+  "main": "./base.js",
+  "exports": {
+    "./base": "./base.js",
+    "./react": "./react.js",
+    "./next": "./next.js",
+    "./nest": "./nest.js"
+  },
+  "dependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.34.0",
+    "browserslist": "^4.27.0",
+    "eslint": "^9.34.0",
+    "eslint-config-next": "^15.4.4",
+    "eslint-config-turbo": "^2.5.6",
+    "eslint-plugin-compat": "^6.0.2",
+    "eslint-plugin-react": "^7.37.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "typescript-eslint": "^8.20.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  }
+}

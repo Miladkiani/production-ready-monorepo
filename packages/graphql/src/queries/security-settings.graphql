@@ -1,0 +1,19 @@
+query SecuritySettings {
+  securitySettings {
+    id
+    telegramBotToken
+    telegramChatId
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateSecuritySettings($input: UpdateSecuritySettingsInput!) {
+  updateSecuritySettings(input: $input) {
+    id
+    telegramBotToken
+    telegramChatId
+    createdAt
+    updatedAt
+  }
+}

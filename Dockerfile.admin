@@ -1,0 +1,104 @@
+# syntax=docker/dockerfile:1.4
+
+# =============================================================================
+# My Career Admin - Production Docker Image (Optimized)
+# =============================================================================
+
+# Stage 1: Builder
+FROM node:20-alpine AS builder
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Enable corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy workspace configuration
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY turbo.json ./
+
+# Copy package.json files for workspace resolution (only runtime dependencies)
+COPY apps/admin/package.json ./apps/admin/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/graphql/package.json ./packages/graphql/
+COPY packages/validation/package.json ./packages/validation/
+
+# Install dependencies (uses BuildKit cache for faster rebuilds)
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# Copy only the GraphQL schema file (needed for graphql codegen)
+COPY apps/backend/src/schema.gql ./apps/backend/src/schema.gql
+
+# Copy packages source
+COPY packages ./packages
+
+# Build packages that admin depends on (only runtime dependencies)
+WORKDIR /app/packages/validation
+RUN pnpm build
+
+WORKDIR /app/packages/ui
+RUN pnpm build
+
+WORKDIR /app/packages/graphql
+RUN pnpm build
+
+# Copy admin source
+WORKDIR /app
+COPY apps/admin ./apps/admin
+
+# Build admin application
+WORKDIR /app/apps/admin
+
+# Build-time arguments (passed from docker-compose.yml)
+ARG NEXT_PUBLIC_GRAPHQL_URL
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_ADMIN_PATH
+ARG NEXT_PUBLIC_IMAGE_DOMAINS
+ARG NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+
+# Convert build args to environment variables for Next.js build
+ENV NEXT_PUBLIC_GRAPHQL_URL=$NEXT_PUBLIC_GRAPHQL_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_ADMIN_PATH=$NEXT_PUBLIC_ADMIN_PATH
+ENV NEXT_PUBLIC_IMAGE_DOMAINS=$NEXT_PUBLIC_IMAGE_DOMAINS
+ENV NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+# Reduce parallelism to avoid memory issues
+ENV UV_THREADPOOL_SIZE=4
+RUN pnpm build
+
+# Stage 2: Production runner
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built Next.js application
+# Next.js standalone needs public folder in TWO locations:
+# 1. ./apps/admin/public - App-specific serving (server.js runs from apps/admin/)
+# 2. ./public - For image optimizer and some internal operations with basePath
+COPY --from=builder /app/apps/admin/public ./public
+COPY --from=builder /app/apps/admin/public ./apps/admin/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/admin/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/admin/.next/static ./apps/admin/.next/static
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/admin', (r) => {process.exit(r.statusCode === 200 || r.statusCode === 307 ? 0 : 1)})" || exit 1
+
+# Start application
+CMD ["node", "apps/admin/server.js"]

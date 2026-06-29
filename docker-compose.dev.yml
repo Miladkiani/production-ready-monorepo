@@ -1,0 +1,79 @@
+# ============================================
+# 🎓 Docker Compose - Development Configuration
+# ============================================
+# This EXTENDS docker-compose.yml with dev-specific overrides
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: "3.8"
+
+services:
+  # ==========================================
+  # Backend - Development Mode
+  # ==========================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      # 🎓 TARGET: Use specific stage from Dockerfile
+      target: dependencies
+      args:
+        NODE_ENV: development
+    command: sh -c "pnpm --filter backend exec prisma generate && pnpm --filter backend dev"
+    environment:
+      NODE_ENV: development
+      # Enable debugging
+      DEBUG: nest:*
+      # Enable GraphQL Playground in dev
+      GRAPHQL_PLAYGROUND: "true"
+      GRAPHQL_INTROSPECTION: "true"
+    volumes:
+      # 🎓 Bind mount source code for hot reload
+      - ./apps/backend:/app/apps/backend
+      - ./packages:/app/packages
+      # Named volume for node_modules (don't override container's node_modules!)
+      - /app/node_modules
+      - /app/apps/backend/node_modules
+    ports:
+      # 🎓 Expose debug port for VS Code debugging
+      - "9229:9229"
+
+  # ==========================================
+  # Admin - Development Mode
+  # ==========================================
+  admin:
+    build:
+      target: dependencies
+      args:
+        NODE_ENV: development
+    command: pnpm --filter admin dev
+    environment:
+      NODE_ENV: development
+      # Next.js dev mode
+      NEXT_TELEMETRY_DISABLED: 1
+    volumes:
+      # Bind mount for hot reload
+      - ./apps/admin:/app/apps/admin
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/admin/node_modules
+      # Don't sync .next folder (causes issues)
+      - /app/apps/admin/.next
+
+  # ==========================================
+  # Website - Development Mode
+  # ==========================================
+  website:
+    build:
+      target: dependencies
+      args:
+        NODE_ENV: development
+    command: pnpm --filter website dev
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: 1
+    volumes:
+      - ./apps/website:/app/apps/website
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/website/node_modules
+      - /app/apps/website/.next

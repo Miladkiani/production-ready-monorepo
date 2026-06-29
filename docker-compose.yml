@@ -1,0 +1,283 @@
+# =============================================================================
+# Fullstack Turborepo Starter - Production Docker Compose Configuration
+# =============================================================================
+# Orchestrates multiple containers with optimized networking and health checks
+# Orchestrates multiple containers with networking and health checks
+# =============================================================================
+
+services:
+  # =============================================================================
+  # Shared Package Builder (Build once, use everywhere)
+  # =============================================================================
+  # This builds all shared packages (ui, validation, graphql) once
+  # Other services copy the pre-built packages instead of rebuilding
+  # Result: ~75% faster builds, better cache utilization
+  package-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.packages
+      target: builder
+      # Enable BuildKit for advanced caching
+      cache_from:
+        - app-packages:latest
+    image: app-packages:latest
+    # This service doesn't run, it's just for building
+    profiles:
+      - build-only
+
+  # =============================================================================
+  # Backend Service (NestJS + GraphQL)
+  # =============================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      args:
+        # Build-time DATABASE_URL for Prisma Client generation
+        # Uses same path as runtime for consistency
+        - DATABASE_URL=file:/data/production.db
+    container_name: app-backend
+    restart: unless-stopped
+    expose:
+      - "4000"
+    environment:
+      # Database
+      - DATABASE_URL=${DATABASE_URL:-file:/data/production.db}
+
+      # JWT Secrets
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-7d}
+      - REFRESH_TOKEN_MAX_AGE=${REFRESH_TOKEN_MAX_AGE:-604800000}
+
+      # Security
+      - MAX_LOGIN_ATTEMPTS=${MAX_LOGIN_ATTEMPTS:-5}
+      - LOCKOUT_DURATION_MINUTES=${LOCKOUT_DURATION_MINUTES:-15}
+      - COOKIE_SECURE=${COOKIE_SECURE:-true}
+      - COOKIE_SAME_SITE=${COOKIE_SAME_SITE:-lax}
+
+      # Explicitly set cookie domain for all cookies (admin and backend)
+      # Use dot-prefix format (.domain.com) for domain-wide cookies that work across all paths
+      - COOKIE_DOMAIN=.yourdomain.com
+
+      # reCAPTCHA
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+      - CAPTCHA_ENABLED=${CAPTCHA_ENABLED:-true}
+      - RECAPTCHA_V3_THRESHOLD=${RECAPTCHA_V3_THRESHOLD:-0.5}
+      - RECAPTCHA_TIMEOUT=${RECAPTCHA_TIMEOUT:-5000}
+
+      # CORS - Production URLs
+      - CORS_ORIGIN=https://yourdomain.com
+      - FRONTEND_URL=https://yourdomain.com
+      - ADMIN_URL=https://yourdomain.com/admin
+
+      # Public URL for file uploads
+      - PUBLIC_BASE_URL=https://yourdomain.com/api
+
+      # Upload directory
+      - UPLOAD_DIR=uploads
+
+      # GraphQL
+      - GRAPHQL_PLAYGROUND=${GRAPHQL_PLAYGROUND:-false}
+      - GRAPHQL_INTROSPECTION=${GRAPHQL_INTROSPECTION:-false}
+
+      # Email (Optional)
+      - EMAIL_ENABLED=${EMAIL_ENABLED:-false}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_SECURE=${SMTP_SECURE:-false}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Portfolio Contact}
+      - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL}
+
+      # Admin User (for seeding)
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+
+      # Node
+      - NODE_ENV=production
+      - PORT=4000
+
+    volumes:
+      # Persist database
+      - backend-data:/data
+      # Persist uploads
+      - backend-uploads:/app/apps/backend/uploads
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:4000/graphql', (r) => {process.exit(r.statusCode === 400 ? 0 : 1)})",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    networks:
+      - app-network
+
+  # =============================================================================
+  # Admin Service (Next.js Admin Panel)
+  # =============================================================================
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+      args:
+        # Build-time arguments for Next.js NEXT_PUBLIC_* variables
+        - NEXT_PUBLIC_GRAPHQL_URL=https://yourdomain.com/api/graphql
+        - NEXT_PUBLIC_API_URL=https://yourdomain.com/api
+        - NEXT_PUBLIC_ADMIN_PATH=/admin
+        - NEXT_PUBLIC_IMAGE_DOMAINS=yourdomain.com,www.yourdomain.com,yourdomain.com,www.yourdomain.com
+        - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+    container_name: app-admin
+    restart: unless-stopped
+    expose:
+      - "3001"
+    environment:
+      # Browser-accessible URLs (HTTPS with custom domain)
+      - NEXT_PUBLIC_GRAPHQL_URL=https://yourdomain.com/api/graphql
+      - NEXT_PUBLIC_API_URL=https://yourdomain.com/api
+      - NEXT_PUBLIC_IMAGE_DOMAINS=yourdomain.com,www.yourdomain.com,yourdomain.com,www.yourdomain.com
+      # Server-side URLs (Internal Docker network - for server components)
+      - GRAPHQL_INTERNAL_URL=http://backend:4000/graphql
+      - API_URL=http://backend:4000
+      # Admin path - Used by Next.js basePath (MUST match nginx location)
+      - NEXT_PUBLIC_ADMIN_PATH=/admin
+      # reCAPTCHA
+      - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+      # Cookie configuration (CRITICAL: Must match backend for cross-service auth)
+      # Use dot-prefix format (.domain.com) for domain-wide cookies
+      - COOKIE_DOMAIN=.yourdomain.com
+      - NODE_ENV=production
+      - PORT=3001
+      - HOSTNAME=0.0.0.0
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3001/admin', (r) => {process.exit(r.statusCode === 200 || r.statusCode === 307 ? 0 : 1)})",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    networks:
+      - app-network
+
+  # =============================================================================
+  # Website Service (Next.js Public Site)
+  # =============================================================================
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile.website
+      args:
+        # Build-time arguments for Next.js NEXT_PUBLIC_* variables
+        - NEXT_PUBLIC_GRAPHQL_URL=https://yourdomain.com/api/graphql
+        - NEXT_PUBLIC_API_URL=https://yourdomain.com/api
+        - NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+        - NEXT_PUBLIC_IMAGE_DOMAINS=yourdomain.com,www.yourdomain.com,yourdomain.com,www.yourdomain.com
+    container_name: app-website
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      # Browser-accessible URLs (HTTPS with custom domain)
+      - NEXT_PUBLIC_GRAPHQL_URL=https://yourdomain.com/api/graphql
+      - NEXT_PUBLIC_API_URL=https://yourdomain.com/api
+      - NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+      - NEXT_PUBLIC_IMAGE_DOMAINS=yourdomain.com,www.yourdomain.com,yourdomain.com,www.yourdomain.com
+      # Server-side URLs (Internal Docker network - for server components)
+      - GRAPHQL_INTERNAL_URL=http://backend:4000/graphql
+      - API_URL=http://backend:4000
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3000/', (r) => {process.exit(r.statusCode === 200 || r.statusCode === 307 ? 0 : 1)})",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    networks:
+      - app-network
+
+  # =============================================================================
+  # Nginx Reverse Proxy (Routes traffic based on URL paths)
+  # =============================================================================
+  nginx:
+    image: nginx:latest
+    container_name: app-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Nginx configuration
+      - ./nginx/app.conf:/etc/nginx/conf.d/default.conf:ro
+      # SSL certificates (Let's Encrypt)
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Certbot webroot for SSL renewal
+      - /var/www/certbot:/var/www/certbot:ro
+      # Nginx logs
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      backend:
+        condition: service_healthy
+      website:
+        condition: service_healthy
+      admin:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  backend-data:
+    name: app-backend-data
+  backend-uploads:
+    name: app-backend-uploads
+  nginx-logs:
+    name: app-nginx-logs
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  app-network:
+    name: app-network
+    driver: bridge

@@ -1,0 +1,5 @@
+echo "🔍 Running pre-commit checks..."
+echo "📋 Checking GraphQL schema synchronization..."
+echo ""
+
+node scripts/check-schema-sync.js

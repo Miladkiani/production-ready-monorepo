@@ -1,0 +1,42 @@
+{
+  "name": "@repo/graphql",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared GraphQL types and document nodes generated from backend schema",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./generated": {
+      "types": "./dist/generated/graphql.d.ts",
+      "import": "./dist/generated/graphql.js"
+    },
+    "./queries/*": "./dist/queries/*"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm run codegen && tsc -b",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/typed-document-node": "^4.0.0",
+    "@graphql-codegen/typescript": "^4.0.0",
+    "@graphql-codegen/typescript-operations": "^4.0.0",
+    "@types/node": "^24.3.0",
+    "typescript": "^5.4.0"
+  },
+  "peerDependencies": {
+    "graphql": "^16.11.0"
+  },
+  "dependencies": {
+    "@graphql-typed-document-node/core": "^3.2.0"
+  }
+}

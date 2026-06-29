@@ -1,0 +1,235 @@
+@import "tailwindcss";
+@source "../**/*.{js,ts,jsx,tsx}";
+@source "../../node_modules/@repo/ui/**/*.{js,ts,jsx,tsx}";
+
+/* ============================================================
+   ADMIN THEME — Fullstack Turborepo Starter
+   Palette: Indigo (primary) + Sky (accent)
+   Mirrors website palette for visual consistency.
+   ============================================================ */
+
+:root {
+  /* ── Indigo palette (primary) ── */
+  --indigo-50:  #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-200: #c7d2fe;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+  --indigo-900: #312e81;
+
+  /* ── Sky palette (accent) ── */
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+  --sky-600: #0284c7;
+  --sky-700: #0369a1;
+  --sky-900: #0c4a6e;
+
+  /* ── Slate (neutral) ── */
+  --slate-50:  #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --slate-950: #020617;
+
+  --white: #ffffff;
+  --black: #000000;
+
+  /* ── Semantic — Light Mode ── */
+  --color-primary:         var(--indigo-600);
+  --color-primary-hover:   var(--indigo-700);
+  --color-secondary:       var(--sky-500);
+  --color-secondary-hover: var(--sky-600);
+
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-error:   #dc2626;
+  --color-info:    var(--sky-600);
+
+  --color-background:    #f8fafc;
+  --color-surface:       var(--slate-100);
+  --color-surface-hover: var(--slate-200);
+  --color-border:        var(--slate-200);
+  --color-border-hover:  var(--slate-300);
+
+  --color-text-primary:  var(--slate-900);
+  --color-text-muted:    var(--slate-500);
+  --color-text-inverse:  var(--white);
+
+  --color-gray: var(--slate-200);
+
+  /* ── Spacing ── */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+
+  /* ── Typography ── */
+  --font-sans:
+    var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, Arial, sans-serif;
+  --font-size-xs:   0.75rem;
+  --font-size-sm:   0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg:   1.125rem;
+  --font-size-xl:   1.25rem;
+  --line-height:    1.5;
+
+  /* ── Border Radius ── */
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 1rem;
+
+  /* ── Misc ── */
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Elevation ── */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* ── Dark Mode ─────────────────────────────────────────────── */
+.dark {
+  --color-primary:         var(--indigo-400);
+  --color-primary-hover:   #a5b4fc;
+  --color-secondary:       var(--sky-400);
+  --color-secondary-hover: var(--sky-300);
+
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-error:   #f87171;
+  --color-info:    var(--sky-400);
+
+  --color-background:    var(--slate-950);
+  --color-surface:       var(--slate-900);
+  --color-surface-hover: var(--slate-800);
+  --color-border:        var(--slate-700);
+  --color-border-hover:  var(--slate-600);
+
+  --color-text-primary:  #f1f5f9;
+  --color-text-muted:    var(--slate-400);
+  --color-text-inverse:  var(--slate-900);
+
+  --color-gray: var(--slate-700);
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+}
+
+/* ── Tailwind v4 @theme inline ──────────────────────────────── */
+@theme inline {
+  --breakpoint-xs: 480px;
+
+  --color-primary:         var(--color-primary);
+  --color-primary-hover:   var(--color-primary-hover);
+  --color-secondary:       var(--color-secondary);
+  --color-secondary-hover: var(--color-secondary-hover);
+  --color-success:         var(--color-success);
+  --color-warning:         var(--color-warning);
+  --color-error:           var(--color-error);
+  --color-info:            var(--color-info);
+  --color-background:      var(--color-background);
+  --color-surface:         var(--color-surface);
+  --color-surface-hover:   var(--color-surface-hover);
+  --color-border:          var(--color-border);
+  --color-border-hover:    var(--color-border-hover);
+  --color-text-primary:    var(--color-text-primary);
+  --color-text-muted:      var(--color-text-muted);
+  --color-text-inverse:    var(--color-text-inverse);
+
+  --text-xs:   var(--font-size-xs);
+  --text-sm:   var(--font-size-sm);
+  --text-base: var(--font-size-base);
+  --text-lg:   var(--font-size-lg);
+  --text-xl:   var(--font-size-xl);
+
+  --spacing-xs: var(--spacing-xs);
+  --spacing-sm: var(--spacing-sm);
+  --spacing-md: var(--spacing-md);
+  --spacing-lg: var(--spacing-lg);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  --animate-indeterminate: indeterminate 1.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  --animate-fade-in-up:    fadeInUp 0.7s ease-out forwards;
+  --animate-fade-in:       fadeIn 0.6s ease-out forwards;
+  --animate-slide-right:   slideInRight 0.7s ease-out forwards;
+  --animate-slide-left:    slideInLeft 0.7s ease-out forwards;
+  --animate-scale-in:      scaleIn 0.6s ease-out forwards;
+
+  @keyframes indeterminate {
+    0%   { margin-left: -50%; }
+    100% { margin-left: 100%; }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(2rem); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(2rem); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-2rem); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+}
+
+/* ── Base Styles ────────────────────────────────────────────── */
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+/* ── Accessibility ──────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

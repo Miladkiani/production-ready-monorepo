@@ -1,0 +1,13 @@
+{
+  "extends": "@repo/typescript-config/nest-tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@backend/publisher/*": ["src/publishers/*"],
+      "@backend/auth/*": ["src/auth/*"],
+      "@backend/file/*": ["src/file/*"]
+    }
+  },
+  "include": ["src"]
+}

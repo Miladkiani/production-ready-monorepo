@@ -1,0 +1,14 @@
+# Security contact address
+Contact: mailto:security@yourdomain.com
+
+# Security policy
+Policy: https://yourdomain.com/security-policy
+
+# Preferred languages
+Preferred-Languages: en
+
+# Canonical URL
+Canonical: https://yourdomain.com/.well-known/security.txt
+
+# Expiration date (update annually)
+Expires: 2027-01-01T00:00:00.000Z
